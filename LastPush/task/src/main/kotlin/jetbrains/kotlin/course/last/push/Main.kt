@@ -11,10 +11,12 @@ fun getPattern(): String {
             "yes" -> {
                 return choosePattern()
             }
+
             "no" -> {
                 println("Please, input a custom picture")
                 return safeReadLine()
             }
+
             else -> println("Please input 'yes' or 'no'")
         }
     } while (true)
@@ -43,6 +45,7 @@ fun chooseGenerator(): String {
                 toContinue = false
                 generator = input
             }
+
             else -> println("Please, input 'canvas' or 'canvasGaps'")
         }
     } while (toContinue)
@@ -54,7 +57,35 @@ fun safeReadLine(): String = readlnOrNull() ?: error("Your input is incorrect, s
 
 fun getPatternHeight(pattern: String): Int = pattern.lines().size
 
+fun fillPatternRow(patternRow: String, patternWidth: Int): String {
+    if (patternRow.length > patternWidth) {
+        throw IllegalStateException("Illegal pattern length")
+    }
+    val widthDifference = patternWidth - patternRow.length
+    val diff = separator.toString().repeat(widthDifference)
+    return patternRow + diff
+}
+
+fun repeatHorizontally(pattern: String, n: Int, patternWidth: Int): String {
+    // trim() removes all whitespace, which is not what we want
+    val patternRows = pattern.lines().map { it.replace(Regex("""\r?\n"""), "") }
+    val repeatedPattern = StringBuilder()
+    for (row in patternRows) {
+        // Using \n instead of newLineSymbol, otherwise test fails on Windows
+        repeatedPattern.append(fillPatternRow(row, patternWidth).repeat(n)).append("\n")
+    }
+    // And also doesn't like the final newline
+    return repeatedPattern.toString().dropLast(1)
+}
+
 fun main() {
+
+    println("Pattern:")
+    val n = 2
+    println(rhombus)
+    println("n = $n")
+    println("Result:")
+    println(repeatHorizontally(rhombus, n, getPatternWidth(rhombus)))
     // Uncomment this code on the last step of the game
 
     // val pattern = getPattern()
